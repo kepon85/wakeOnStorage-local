@@ -16,12 +16,9 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    service:
-                      type: string
-                    type:
-                      type: string
+                  $ref: '#/components/schemas/Service'
+        '403':
+          $ref: '#/components/responses/AuthError'
   /{service}/status:
     get:
       summary: Etat du service
@@ -37,12 +34,11 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  service:
-                    type: string
-                  currentuser:
-                    type: string
+                $ref: '#/components/schemas/Status'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '403':
+          $ref: '#/components/responses/AuthError'
   /{service}/count:
     get:
       summary: Nombre de connexions actives
@@ -58,10 +54,11 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  count:
-                    type: integer
+                $ref: '#/components/schemas/Count'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '403':
+          $ref: '#/components/responses/AuthError'
   /{service}/up:
     post:
       summary: Allume le service
@@ -77,7 +74,11 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                $ref: '#/components/schemas/Result'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '403':
+          $ref: '#/components/responses/AuthError'
   /{service}/down:
     post:
       summary: Eteint le service
@@ -93,7 +94,11 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                $ref: '#/components/schemas/Result'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '403':
+          $ref: '#/components/responses/AuthError'
   /{service}/down-force:
     post:
       summary: Forcer l'arret du service
@@ -109,11 +114,70 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-  components:
+                $ref: '#/components/schemas/Result'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '403':
+          $ref: '#/components/responses/AuthError'
+components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
+  schemas:
+    Service:
+      type: object
+      properties:
+        service:
+          type: string
+        type:
+          type: string
+    Status:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [up, down]
+    Count:
+      type: object
+      properties:
+        count:
+          type: integer
+    Result:
+      type: object
+      properties:
+        success:
+          type: boolean
+          nullable: true
+        info:
+          type: string
+          nullable: true
+        error:
+          type: string
+          nullable: true
+        command:
+          type: string
+          nullable: true
+        output:
+          type: string
+          nullable: true
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+  responses:
+    AuthError:
+      description: Jeton manquant ou invalide
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFoundError:
+      description: Service inconnu
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
 security:
   - bearerAuth: []
