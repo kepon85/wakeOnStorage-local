@@ -99,6 +99,11 @@ class ServiceManager
 
     public function down(string $service): array
     {
+        $status = $this->status($service);
+        if (($status['status'] ?? '') === 'down') {
+            Logger::log(4, "already_down $service");
+            return ['info' => 'already stopped'];
+        }
         $count = $this->count($service);
         if (($count['count'] ?? 0) > 0) {
             return ['info' => 'connections_active', 'count' => $count['count']];
@@ -108,6 +113,11 @@ class ServiceManager
 
     public function downForce(string $service): array
     {
+        $status = $this->status($service);
+        if (($status['status'] ?? '') === 'down') {
+            Logger::log(4, "already_down $service");
+            return ['info' => 'already stopped'];
+        }
         return $this->runCommands($service, 'down');
     }
 }

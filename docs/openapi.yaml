@@ -62,21 +62,6 @@ paths:
                 properties:
                   count:
                     type: integer
-    post:
-      summary: Execute la commande status
-      parameters:
-        - in: path
-          name: service
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Resultat
-          content:
-            application/json:
-              schema:
-                type: object
   /{service}/up:
     post:
       summary: Allume le service

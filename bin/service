@@ -6,6 +6,11 @@ use WakeOnStorage\Config;
 use WakeOnStorage\ServiceManager;
 use WakeOnStorage\Logger;
 
+if (function_exists('posix_geteuid') && posix_geteuid() !== 0) {
+    fwrite(STDERR, "This command must be run with sudo\n");
+    exit(1);
+}
+
 if ($argc < 3) {
     fwrite(STDERR, "Usage: service <service> <up|down|down-force|status|count>\n");
     exit(1);
