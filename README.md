@@ -1,5 +1,7 @@
 # WakeOnStorage Local
 
+<img src="WakeOnStorage-FulltLogoBan.png" style="zoom:50%;" />
+
 Ce projet fournit une petite API REST permettant d'allumer ou d'éteindre des services de stockage à distance et d'en connaître l'état. Il n'utilise aucun framework PHP externe et peut être déployé sur un serveur web léger comme lighttpd.
 
 ## Installation
