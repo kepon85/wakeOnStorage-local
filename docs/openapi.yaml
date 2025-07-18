@@ -43,6 +43,25 @@ paths:
                     type: string
                   currentuser:
                     type: string
+  /{service}/count:
+    get:
+      summary: Nombre de connexions actives
+      parameters:
+        - in: path
+          name: service
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Nombre de connexions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
     post:
       summary: Execute la commande status
       parameters:
@@ -90,7 +109,23 @@ paths:
             application/json:
               schema:
                 type: object
-components:
+  /{service}/down-force:
+    post:
+      summary: Forcer l'arret du service
+      parameters:
+        - in: path
+          name: service
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Resultat
+          content:
+            application/json:
+              schema:
+                type: object
+  components:
   securitySchemes:
     bearerAuth:
       type: http

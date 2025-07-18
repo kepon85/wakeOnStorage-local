@@ -4,10 +4,12 @@ require __DIR__ . '/../vendor/autoload.php';
 use WakeOnStorage\Config;
 use WakeOnStorage\Auth;
 use WakeOnStorage\ServiceManager;
+use WakeOnStorage\Logger;
 
 header('Content-Type: application/json');
 
 $appConfig = Config::load(__DIR__ . '/../config/app.yaml');
+Logger::configure($appConfig['log'] ?? []);
 $serviceConfig = Config::load(__DIR__ . '/../config/services.yaml');
 
 $auth = new Auth($appConfig);
@@ -36,14 +38,34 @@ if (count($parts) >= 2) {
         exit;
     }
 
-    if ($method === 'GET' && $action === 'status') {
-        echo json_encode($manager->status($service));
-        exit;
+    if ($method === 'GET') {
+        if ($action === 'status') {
+            echo json_encode($manager->status($service));
+            exit;
+        }
+        if ($action === 'count') {
+            echo json_encode($manager->count($service));
+            exit;
+        }
     }
 
-    if ($method === 'POST' && in_array($action, ['up', 'down', 'status'], true)) {
-        echo json_encode($manager->run($service, $action));
-        exit;
+    if ($method === 'POST') {
+        if ($action === 'up') {
+            echo json_encode($manager->up($service));
+            exit;
+        }
+        if ($action === 'down') {
+            echo json_encode($manager->down($service));
+            exit;
+        }
+        if ($action === 'down-force') {
+            echo json_encode($manager->downForce($service));
+            exit;
+        }
+        if ($action === 'status') {
+            echo json_encode($manager->status($service));
+            exit;
+        }
     }
 }
 
