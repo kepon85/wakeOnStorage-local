@@ -1,0 +1,99 @@
+openapi: 3.0.0
+info:
+  title: WakeOnStorage API
+  version: 1.0.0
+servers:
+  - url: /api
+paths:
+  /services:
+    get:
+      summary: Liste les services disponibles
+      responses:
+        '200':
+          description: Liste des services
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    service:
+                      type: string
+                    type:
+                      type: string
+  /{service}/status:
+    get:
+      summary: Etat du service
+      parameters:
+        - in: path
+          name: service
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Etat du service
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  service:
+                    type: string
+                  currentuser:
+                    type: string
+    post:
+      summary: Execute la commande status
+      parameters:
+        - in: path
+          name: service
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Resultat
+          content:
+            application/json:
+              schema:
+                type: object
+  /{service}/up:
+    post:
+      summary: Allume le service
+      parameters:
+        - in: path
+          name: service
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Resultat
+          content:
+            application/json:
+              schema:
+                type: object
+  /{service}/down:
+    post:
+      summary: Eteint le service
+      parameters:
+        - in: path
+          name: service
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Resultat
+          content:
+            application/json:
+              schema:
+                type: object
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+security:
+  - bearerAuth: []

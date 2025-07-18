@@ -1,0 +1,10 @@
+{
+  "name": "wakeonstorage/local",
+  "require": {},
+  "minimum-stability": "stable",
+  "autoload": {
+    "psr-4": {
+      "WakeOnStorage\\": "src/"
+    }
+  }
+}
