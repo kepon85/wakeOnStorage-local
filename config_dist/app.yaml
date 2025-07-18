@@ -6,3 +6,4 @@ log:
   file: /var/log/wakeonstorage.log
   level: 3
   max_size: 1048576
+base_path: /api

@@ -34,6 +34,7 @@ log:
   file: /var/log/wakeonstorage.log
   level: 3                # 0 rien, 1 erreur, 2 warning, 3 info, 4 debug
   max_size: 1048576       # Rotation à 1 Mo
+base_path: /api           # Prefix de l'URL à ignorer
 ```
 
 Le fichier `config/services.yaml` déclare les services disponibles et les commandes à exécuter :
@@ -75,6 +76,12 @@ GET /services
 
 Réponse : liste des services configurés.
 
+Exemple d'appel avec `curl` :
+
+```bash
+curl -s -X GET -H "Authorization: Bearer mysecrettoken" http://127.0.0.1:52000/api/services
+```
+
 ### État d'un service
 
 ```http
@@ -88,12 +95,6 @@ GET /{service}/count
 POST /{service}/up
 POST /{service}/down
 POST /{service}/down-force
-```
-
-### Exécuter la commande `status` (POST)
-
-```http
-POST /{service}/status
 ```
 
 Chaque commande retourne un JSON de succès ou d'erreur.
