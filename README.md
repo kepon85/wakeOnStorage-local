@@ -18,7 +18,7 @@ composer dump-autoload --no-dev
 5. Ajoutez une règle sudoers permettant à `www-data` d'exécuter `bin/service` en sudo :
 
 ```bash
-www-data ALL=(root) NOPASSWD: /opt/wakeOnStorage-local/bin/service
+www-data ALL=(root) NOPASSWD: /opt/wakeOnStorage-local/bin/service *
 ```
 
 ## Configuration
