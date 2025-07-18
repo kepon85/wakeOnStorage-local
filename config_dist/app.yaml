@@ -4,6 +4,6 @@ auth:
     - 127.0.0.1
 log:
   file: /var/log/wakeonstorage.log
-  level: 3
+  level: 4
   max_size: 1048576
 base_path: /api

@@ -3,12 +3,12 @@ services:
     type: relai
     commands:
       up:
-        - touch /tmp/backup
+        - touch /mnt/m2ha/homeassistant/ha_config/backup_progress
       down:
         - ssh root@192.168.1.2 "shutdown -h now"
-        - touch /tmp/backup
-      count: ssh root@192.168.1.2 'HOST_IPS=$(hostname -I|sed -e "s/ /|/g" -e "s/\./\\./g"); ss -tun state established "( sport = :22 )" | awk '\''$5~/:[0-9]+$/ {print $5}'\'' | cut -d: -f1 | grep -Ev "^($HOST_IPS|::1)$" | sort -u | wc -l | awk '\''{print $1-1}'\'
-      status: ssh root@192.168.1.2 "echo status"
+        - rm /mnt/m2ha/homeassistant/ha_config/backup_progress
+      count: ssh -o ConnectionAttempts=1 -o StrictHostKeyChecking=no -o ConnectTimeout=1 root@192.168.1.2 'HOST_IPS=$(hostname -I|sed -e "s/ /|/g" -e "s/\./\\./g"); ss -tun state established "( sport = :22 )" | awk '\''$5~/:[0-9]+$/ {print $5}'\'' | cut -d: -f1 | grep -Ev "^($HOST_IPS|::1)$" | sort -u | wc -l | awk '\''{print $1-1}'\'
+      status: ssh -o ConnectionAttempts=1 -o StrictHostKeyChecking=no -o ConnectTimeout=1 root@192.168.1.2 "echo status"
   pi0ddusb1:
     type: uhubctl
     commands:
