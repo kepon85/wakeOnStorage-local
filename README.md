@@ -132,6 +132,8 @@ Le jeton est celui défini dans `config/app.yaml`.
 ## Documentation OpenAPI
 
 Une description de l'API est disponible dans `docs/openapi.yaml`.
+Vous pouvez également ouvrir `docs/openapi.html` dans un navigateur pour
+une version rendue au format HTML.
 
 ## Exemple de configuration lighttpd
 
