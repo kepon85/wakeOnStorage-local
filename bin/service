@@ -4,15 +4,18 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use WakeOnStorage\Config;
 use WakeOnStorage\ServiceManager;
+use WakeOnStorage\Logger;
 
 if ($argc < 3) {
-    fwrite(STDERR, "Usage: service <service> <up|down|status>\n");
+    fwrite(STDERR, "Usage: service <service> <up|down|down-force|status|count>\n");
     exit(1);
 }
 
 $service = $argv[1];
 $action = $argv[2];
 
+$appConfig = Config::load(__DIR__ . '/../config/app.yaml');
+Logger::configure($appConfig['log'] ?? []);
 $serviceConfig = Config::load(__DIR__ . '/../config/services.yaml');
 $manager = new ServiceManager($serviceConfig['services'] ?? []);
 
@@ -21,6 +24,24 @@ if (!$manager->has($service)) {
     exit(1);
 }
 
-$result = $manager->run($service, $action);
+$actions = ['up','down','down-force','status','count'];
+if (!in_array($action, $actions, true)) {
+    fwrite(STDERR, "Unknown action\n");
+    exit(1);
+}
+
+switch ($action) {
+    case 'up':
+        $result = $manager->up($service); break;
+    case 'down':
+        $result = $manager->down($service); break;
+    case 'down-force':
+        $result = $manager->downForce($service); break;
+    case 'count':
+        $result = $manager->count($service); break;
+    case 'status':
+    default:
+        $result = $manager->status($service); break;
+}
 
 echo json_encode($result) . PHP_EOL;

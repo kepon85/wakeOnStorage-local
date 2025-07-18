@@ -13,8 +13,13 @@ Ce projet fournit une petite API REST permettant d'allumer ou d'éteindre des se
 composer dump-autoload --no-dev
 ```
 
-3. Configurez vos services dans `config/services.yaml` et l'authentification dans `config/app.yaml`.
+3. Copiez le dossier `config_dist` en `config` puis éditez `config/app.yaml` et `config/services.yaml`.
 4. Publiez le dossier `public/` sur `/api` de votre serveur web.
+5. Ajoutez une règle sudoers permettant à `www-data` d'exécuter `bin/service` en sudo :
+
+```bash
+www-data ALL=(root) NOPASSWD: /opt/wakeOnStorage-local/bin/service
+```
 
 ## Configuration
 
@@ -25,6 +30,10 @@ auth:
   token: mysecrettoken       # Jeton Bearer requis pour l'API
   allowed_ips:
     - 127.0.0.1             # Liste des IP autorisées (laisser vide pour aucune restriction)
+log:
+  file: /var/log/wakeonstorage.log
+  level: 3                # 0 rien, 1 erreur, 2 warning, 3 info, 4 debug
+  max_size: 1048576       # Rotation à 1 Mo
 ```
 
 Le fichier `config/services.yaml` déclare les services disponibles et les commandes à exécuter :
@@ -39,8 +48,8 @@ services:
       down:
         - ssh root@192.168.1.2 "shutdown -h now"
         - touch /tmp/backup
-      status:
-        - ssh root@192.168.1.2 "LACOMMANDE"
+      count: ssh root@192.168.1.2 "..."
+      status: ssh root@192.168.1.2 "echo status"
   pi0ddusb1:
     type: uhubctl
     commands:
@@ -50,8 +59,8 @@ services:
       down:
         - umount /mnt/xxxxxx
         - uhubctl -l 1-1 -p 4 -a off
-      status:
-        - "echo 'check status'"
+      count: lsof +D /mnt/xxxxxx | wc -l
+      status: "echo check"
 ```
 
 Les commandes sont exécutées via le script `bin/service` qui peut être appelé avec `sudo` par l'API.
@@ -70,6 +79,7 @@ Réponse : liste des services configurés.
 
 ```http
 GET /{service}/status
+GET /{service}/count
 ```
 
 ### Allumer ou éteindre un service
@@ -77,6 +87,7 @@ GET /{service}/status
 ```http
 POST /{service}/up
 POST /{service}/down
+POST /{service}/down-force
 ```
 
 ### Exécuter la commande `status` (POST)
@@ -100,6 +111,25 @@ Le jeton est celui défini dans `config/app.yaml`.
 ## Documentation OpenAPI
 
 Une description de l'API est disponible dans `docs/openapi.yaml`.
+
+## Exemple de configuration lighttpd
+
+```lighttpd
+server.modules += ( "mod_alias", "mod_cgi", "mod_rewrite" )
+
+# 1) API PHP sous /api → répertoire /opt/wakeOnStore-local, sans listing, ni auth
+$HTTP["url"] =~ "^/api($|/)" {
+    alias.url += (
+        "/api" => "/opt/wakeOnStore-local/public"
+    )
+    url.rewrite-if-not-file = (
+        "^/api/(.*)$" => "/api/index.php"
+    )
+    dir-listing.activate = "disable"
+    auth.require = ( )
+    cgi.assign = ( ".php" => "/usr/bin/php-cgi" )
+}
+```
 
 ## Lancement depuis la ligne de commande
 
