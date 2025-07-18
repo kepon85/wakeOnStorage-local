@@ -7,3 +7,5 @@ log:
   level: 4
   max_size: 1048576
 base_path: /api
+sudo_path: /usr/bin/sudo
+service_script: /usr/bin/php /opt/wakeOnStorage-local/bin/service

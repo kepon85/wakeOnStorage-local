@@ -35,6 +35,8 @@ log:
   level: 3                # 0 rien, 1 erreur, 2 warning, 3 info, 4 debug
   max_size: 1048576       # Rotation à 1 Mo
 base_path: /api           # Prefix de l'URL à ignorer
+sudo_path: /usr/bin/sudo
+service_script: /usr/bin/php /opt/wakeOnStorage-local/bin/service
 ```
 
 Le fichier `config/services.yaml` déclare les services disponibles et les commandes à exécuter :

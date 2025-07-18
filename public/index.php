@@ -4,6 +4,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use WakeOnStorage\Config;
 use WakeOnStorage\Auth;
 use WakeOnStorage\ServiceManager;
+use WakeOnStorage\ServiceRunner;
 use WakeOnStorage\Logger;
 
 header('Content-Type: application/json');
@@ -21,6 +22,11 @@ if (!$auth->check()) {
 
 $manager = new ServiceManager($serviceConfig['services'] ?? []);
 Logger::log(4, 'init ServiceManager');
+$runner = new ServiceRunner(
+    $appConfig['sudo_path'] ?? 'sudo',
+    $appConfig['service_script'] ?? __DIR__ . '/../bin/service'
+);
+Logger::log(4, 'init ServiceRunner');
 
 $method = $_SERVER['REQUEST_METHOD'];
 $path = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
@@ -53,12 +59,12 @@ if (count($parts) >= 2) {
     if ($method === 'GET') {
         if ($action === 'status') {
             Logger::log(4, 'action status');
-            echo json_encode($manager->status($service));
+            echo json_encode($runner->run($service, 'status'));
             exit;
         }
         if ($action === 'count') {
             Logger::log(4, 'action count');
-            echo json_encode($manager->count($service));
+            echo json_encode($runner->run($service, 'count'));
             exit;
         }
     }
@@ -66,17 +72,17 @@ if (count($parts) >= 2) {
     if ($method === 'POST') {
         if ($action === 'up') {
             Logger::log(4, 'action up');
-            echo json_encode($manager->up($service));
+            echo json_encode($runner->run($service, 'up'));
             exit;
         }
         if ($action === 'down') {
             Logger::log(4, 'action down');
-            echo json_encode($manager->down($service));
+            echo json_encode($runner->run($service, 'down'));
             exit;
         }
         if ($action === 'down-force') {
             Logger::log(4, 'action down-force');
-            echo json_encode($manager->downForce($service));
+            echo json_encode($runner->run($service, 'down-force'));
             exit;
         }
     }
