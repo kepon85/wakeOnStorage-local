@@ -1,0 +1,22 @@
+services:
+  nas:
+    type: relai
+    commands:
+      up:
+        - touch /tmp/backup
+      down:
+        - ssh root@192.168.1.2 "shutdown -h now"
+        - touch /tmp/backup
+      status:
+        - ssh root@192.168.1.2 "LACOMMANDE"
+  pi0ddusb1:
+    type: uhubctl
+    commands:
+      up:
+        - uhubctl -l 1-1 -p 4 -a on
+        - mount /dev/xxxxx /mnt/xxxxxx
+      down:
+        - umount /mnt/xxxxxx
+        - uhubctl -l 1-1 -p 4 -a off
+      status:
+        - "echo 'check status'"
