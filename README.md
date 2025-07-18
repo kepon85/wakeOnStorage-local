@@ -65,6 +65,11 @@ services:
 ```
 
 Les commandes sont exécutées via le script `bin/service` qui peut être appelé avec `sudo` par l'API.
+Lorsqu'une requête GET ou POST est reçue, le code PHP lance en interne
+`sudo /opt/wakeOnStorage-local/bin/service <nomDuService> <ordre>` pour
+exécuter l'action demandée. Ce passage par `sudo` est nécessaire car
+certaines commandes déclarées dans `config/services.yaml` nécessitent les
+droits administrateur.
 
 ## Utilisation de l'API
 
@@ -96,6 +101,19 @@ POST /{service}/up
 POST /{service}/down
 POST /{service}/down-force
 ```
+
+Exemple d'appel avec `curl` pour allumer un service :
+
+```bash
+curl -s -X POST \
+  -H "Authorization: Bearer mysecrettoken" \
+  -H "Content-Length: 0" \
+  http://127.0.0.1:52000/api/nas/up
+```
+
+Sous lighttpd, l'ajout explicite de l'en-tête `Content-Length: 0` est
+indispensable pour que les requêtes POST sans corps soient correctement
+traitées.
 
 Chaque commande retourne un JSON de succès ou d'erreur.
 
