@@ -7,16 +7,16 @@ services:
       down:
         - ssh root@192.168.1.2 "shutdown -h now"
         - touch /tmp/backup
-      status:
-        - ssh root@192.168.1.2 "LACOMMANDE"
+      count: ssh root@192.168.1.2 'HOST_IPS=$(hostname -I|sed -e "s/ /|/g" -e "s/\./\\./g"); ss -tun state established "( sport = :22 )" | awk '\''$5~/:[0-9]+$/ {print $5}'\'' | cut -d: -f1 | grep -Ev "^($HOST_IPS|::1)$" | sort -u | wc -l | awk '\''{print $1-1}'\'
+      status: ssh root@192.168.1.2 "echo status"
   pi0ddusb1:
     type: uhubctl
     commands:
       up:
-        - uhubctl -l 1-1 -p 4 -a on
-        - mount /dev/xxxxx /mnt/xxxxxx
+        - uhubctl -l 1-1 -p 3 -a on
+        - mount /dev/sdb1 /mnt/ddusb1
       down:
-        - umount /mnt/xxxxxx
-        - uhubctl -l 1-1 -p 4 -a off
-      status:
-        - "echo 'check status'"
+        - umount /mnt/ddusb1
+        - uhubctl -l 1-1 -p 3 -a off
+      count: lsof +D /mnt/ddusb1 2>/dev/null | tail -n +2 | wc -l
+      status: ls /mnt/ddusb1/issue.txt
