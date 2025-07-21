@@ -1,0 +1,5 @@
+#!/usr/bin/env php
+<?php
+$bytes = random_bytes(16);
+$token = rtrim(strtr(base64_encode($bytes), '+/', '-_'), '=');
+echo "token: $token\n";

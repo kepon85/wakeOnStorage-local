@@ -37,7 +37,12 @@ log:
 base_path: /api           # Prefix de l'URL à ignorer
 sudo_path: /usr/bin/sudo
 service_script: /usr/bin/php /opt/wakeOnStorage-local/bin/service
+debug_ips:
+  - 127.0.0.1             # IP autorisées à recevoir les informations de debug
 ```
+
+Si votre adresse IP figure dans `debug_ips`, les appels à l'API renverront
+également un tableau `debug` contenant le détail des opérations effectuées.
 
 Le fichier `config/services.yaml` déclare les services disponibles et les commandes à exécuter :
 
@@ -161,4 +166,39 @@ Le script `bin/service` peut être utilisé directement :
 ```bash
 sudo php /opt/wakeOnStorage-local/bin/service nas up
 ```
+
+### Suivre les événements en temps réel
+
+Une petite commande permet d'afficher en continu les nouvelles lignes du fichier de log :
+
+```bash
+php /opt/wakeOnStorage-local/bin/tail
+```
+
+### Générer un jeton aléatoire
+
+Pour créer facilement une valeur à placer dans `config/app.yaml` :
+
+```bash
+php /opt/wakeOnStorage-local/bin/genpass
+```
+
+Le script affiche par exemple :
+
+```
+token: abcd1234
+```
+
+Il suffit de copier cette ligne dans la section `auth` du fichier de configuration.
+
+### Gérer un fichier d'utilisateurs
+
+Si vous avez besoin d'un petit fichier de mots de passe, le script `bin/add-user`
+permet d'ajouter ou de mettre à jour une entrée :
+
+```bash
+php /opt/wakeOnStorage-local/bin/add-user config/users.txt monutilisateur
+```
+
+Le mot de passe est demandé puis stocké chiffré dans le fichier spécifié.
 

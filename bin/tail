@@ -1,0 +1,39 @@
+#!/usr/bin/env php
+<?php
+require __DIR__ . '/../vendor/autoload.php';
+
+use WakeOnStorage\Config;
+
+$appConfig = Config::load(__DIR__ . '/../config/app.yaml');
+$logFile = $appConfig['log']['file'] ?? '/var/log/wakeonstorage.log';
+
+if (!file_exists($logFile)) {
+    fwrite(STDERR, "Log file not found: $logFile\n");
+    exit(1);
+}
+
+$pos = filesize($logFile);
+$fh = fopen($logFile, 'r');
+if ($fh === false) {
+    fwrite(STDERR, "Unable to open log file\n");
+    exit(1);
+}
+fseek($fh, $pos);
+
+while (true) {
+    clearstatcache();
+    $size = filesize($logFile);
+    if ($size < $pos) {
+        fseek($fh, 0);
+        $pos = 0;
+    }
+    if ($size > $pos) {
+        fseek($fh, $pos);
+        while (($line = fgets($fh)) !== false) {
+            echo $line;
+        }
+        $pos = ftell($fh);
+    }
+    sleep(1);
+}
+

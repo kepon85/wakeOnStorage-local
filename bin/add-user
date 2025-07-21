@@ -1,0 +1,32 @@
+#!/usr/bin/env php
+<?php
+if ($argc < 3) {
+    fwrite(STDERR, "Usage: add-user <file> <user>\n");
+    exit(1);
+}
+$file = $argv[1];
+$user = $argv[2];
+if (posix_isatty(STDIN)) {
+    echo "Mot de passe pour $user: ";
+}
+$password = trim(fgets(STDIN));
+$hash = password_hash($password, PASSWORD_BCRYPT);
+$lines = [];
+if (file_exists($file)) {
+    $lines = file($file, FILE_IGNORE_NEW_LINES);
+    $found = false;
+    foreach ($lines as $i => $line) {
+        if (strpos($line, $user . ':') === 0) {
+            $lines[$i] = $user . ':' . $hash;
+            $found = true;
+            break;
+        }
+    }
+    if (!$found) {
+        $lines[] = $user . ':' . $hash;
+    }
+} else {
+    $lines[] = $user . ':' . $hash;
+}
+file_put_contents($file, implode(PHP_EOL, $lines) . PHP_EOL);
+echo "Utilisateur ajouté dans $file\n";
