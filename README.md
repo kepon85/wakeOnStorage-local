@@ -154,6 +154,24 @@ $HTTP["url"] =~ "^/api($|/)" {
 }
 ```
 
+## Serveur PHP intégré
+
+Pour des essais rapides sans serveur web externe, vous pouvez lancer :
+
+```bash
+php -S localhost:8000 -t public
+```
+
+Comme il n'y a pas de réécriture d'URL, transmettez la route via le paramètre
+`r` utilisé par `public/index.php` :
+
+```bash
+curl -X GET http://127.0.0.1:8000/index.php?r=services
+```
+
+Le fichier `index.php` accepte également les chemins réécrits, ce qui permet
+d'utiliser la même logique avec un serveur configuré pour les réécritures.
+
 ## Lancement depuis la ligne de commande
 
 Le script `bin/service` peut être utilisé directement :
