@@ -29,7 +29,10 @@ $runner = new ServiceRunner(
 Logger::log(4, 'init ServiceRunner');
 
 $method = $_SERVER['REQUEST_METHOD'];
-$path = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+$path = trim($_GET['r'] ?? '', '/');
+if ($path === '') {
+    $path = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+}
 $base = trim($appConfig['base_path'] ?? '', '/');
 if ($base !== '' && strpos($path, $base) === 0) {
     $path = substr($path, strlen($base));
