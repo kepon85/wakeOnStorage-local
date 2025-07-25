@@ -1,2 +1,5 @@
 /vendor/
 /config/
+composer.lock
+public/*log
+public/*log*

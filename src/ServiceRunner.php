@@ -23,7 +23,18 @@ class ServiceRunner
         exec($cmd . ' 2>&1', $output, $ret);
         $json = implode("\n", $output);
         Logger::log(4, "cmd ret:$ret output:$json");
+
         $result = json_decode($json, true);
+        if ($result === null && count($output) > 1) {
+            $jsonLine = array_pop($output);
+            $result = json_decode($jsonLine, true);
+            if ($result !== null) {
+                return [
+                    'error' => 'command_failed',
+                    'output' => implode("\n", $output)
+                ];
+            }
+        }
         if ($result === null) {
             return ['error' => 'invalid_output', 'output' => $json];
         }
