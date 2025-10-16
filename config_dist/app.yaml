@@ -1,11 +1,12 @@
 auth:
-  token: mysecrettoken
+  token: Pgd4CyhUra3gVgcR0zugZOqbi0M4PTjGQ 
   allowed_ips:
     - 127.0.0.1
+    - 192.168.1.201
 log:
-  file: /var/log/wakeonstorage.log
+  file: /tmp/wakeonstorage.log
   level: 4
   max_size: 1048576
-base_path: /api
+base_path: /wos-api/index.php/api
 sudo_path: /usr/bin/sudo
 service_script: /usr/bin/php /opt/wakeOnStorage-local/bin/service

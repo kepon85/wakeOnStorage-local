@@ -5,19 +5,19 @@ services:
       up:
         - touch /mnt/m2ha/homeassistant/ha_config/backup_progress
       down:
-        - ssh root@192.168.1.2 "shutdown -h now"
         - rm /mnt/m2ha/homeassistant/ha_config/backup_progress
+        - ssh root@192.168.1.2 "nohup shutdown -h now >/dev/null 2>&1 </dev/null & echo OK"
       count: ssh -o ConnectionAttempts=1 -o StrictHostKeyChecking=no -o ConnectTimeout=1 root@192.168.1.2 'HOST_IPS=$(hostname -I|sed -e "s/ /|/g" -e "s/\./\\./g"); ss -tun state established "( sport = :22 )" | awk '\''$5~/:[0-9]+$/ {print $5}'\'' | cut -d: -f1 | grep -Ev "^($HOST_IPS|::1)$" | sort -u | wc -l | awk '\''{print $1-1}'\'
       status: ssh -o ConnectionAttempts=1 -o StrictHostKeyChecking=no -o ConnectTimeout=1 root@192.168.1.2 "echo status"
   pi0ddusb1:
     type: uhubctl
     commands:
       up:
-        - uhubctl -l 1-1 -p 3 -a on
-        - sleep 2
+        - uhubctl -l 1-1.2 -p 3 -a on ; sleep 1
         - mount /dev/sdb1 /mnt/ddusb1
       down:
         - umount /mnt/ddusb1
-        - uhubctl -l 1-1 -p 3 -a off
-      count: lsof +D /mnt/ddusb1 2>/dev/null | tail -n +2 | wc -l
-      status: ls /mnt/ddusb1/issue.txt
+        - uhubctl -l 1-1.2 -p 3 -a off
+      count: lsof +D /mnt/ddusb1/demo.wakeonstorage 2>/dev/null | tail -n +2 | wc -l
+#      count: echo 1
+      status: ls /mnt/ddusb1/demo.wakeonstorage

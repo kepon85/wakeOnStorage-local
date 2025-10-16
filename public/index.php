@@ -38,6 +38,15 @@ if ($base !== '' && strpos($path, $base) === 0) {
     $path = substr($path, strlen($base));
 }
 $path = ltrim($path, '/');
+$scriptName = basename(parse_url($_SERVER['SCRIPT_NAME'] ?? '', PHP_URL_PATH));
+if ($scriptName !== '' && ($path === $scriptName || strpos($path, $scriptName . '/') === 0)) {
+    $path = substr($path, strlen($scriptName));
+    $path = ltrim($path, '/');
+}
+if ($base !== '' && strpos($path, $base) === 0) {
+    $path = substr($path, strlen($base));
+}
+$path = ltrim($path, '/');
 Logger::log(4, "request $method $path");
 $parts = $path === '' ? [] : explode('/', $path);
 

@@ -154,6 +154,35 @@ $HTTP["url"] =~ "^/api($|/)" {
 }
 ```
 
+## Exemple de configuration Nginx (PHP-FPM)
+
+```nginx
+server {
+    listen 80;
+    server_name example.com;
+
+    # Répertoire public de WakeOnStorage Local
+    root /opt/wakeOnStorage-local/public;
+
+    # Fournit les fichiers statiques sous /api
+    location /wos-api/ {
+        alias /opt/wakeOnStorage-local/public/;
+        try_files $uri $uri/ /api/index.php?$query_string;
+    }
+
+    # Transmet toutes les requêtes PHP (y compris /index.php/...)
+    location ~ ^/wos-api/index\.php(?:/|$) {
+        alias /opt/wakeOnStorage-local/public/index.php;
+        fastcgi_split_path_info ^(/api/index\.php)(/.*)$;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME /opt/wakeOnStorage-local/public/index.php;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+        fastcgi_param QUERY_STRING $query_string;
+        fastcgi_pass unix:/run/php/php8.2-fpm.sock; # Adaptez le chemin du socket PHP-FPM
+    }
+}
+```
+
 ## Serveur PHP intégré
 
 Pour des essais rapides sans serveur web externe, vous pouvez lancer :
