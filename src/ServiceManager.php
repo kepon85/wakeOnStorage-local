@@ -92,7 +92,7 @@ class ServiceManager
     {
         $status = $this->status($service);
         if (($status['status'] ?? '') === 'up') {
-            return ['info' => 'already running'];
+            return ['success' => true, 'info' => 'already running'];
         }
         return $this->runCommands($service, 'up');
     }
@@ -102,7 +102,7 @@ class ServiceManager
         $status = $this->status($service);
         if (($status['status'] ?? '') === 'down') {
             Logger::log(4, "already_down $service");
-            return ['info' => 'already stopped'];
+            return ['success' => true, 'info' => 'already stopped'];
         }
         $count = $this->count($service);
         if (($count['count'] ?? 0) > 0) {
@@ -116,7 +116,7 @@ class ServiceManager
         $status = $this->status($service);
         if (($status['status'] ?? '') === 'down') {
             Logger::log(4, "already_down $service");
-            return ['info' => 'already stopped'];
+            return ['success' => true, 'info' => 'already stopped'];
         }
         return $this->runCommands($service, 'down');
     }

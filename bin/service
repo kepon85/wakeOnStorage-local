@@ -35,6 +35,18 @@ if (!in_array($action, $actions, true)) {
     exit(1);
 }
 
+// Mutating actions must not overlap for the same service. Concurrent `down`
+// calls otherwise race through `count` and can observe each other's `lsof`.
+$lock = null;
+if (in_array($action, ['up', 'down', 'down-force'], true)) {
+    $lockPath = sys_get_temp_dir() . '/wakeonstorage-' . preg_replace('/[^A-Za-z0-9_.-]/', '_', $service) . '.lock';
+    $lock = fopen($lockPath, 'c');
+    if ($lock === false || !flock($lock, LOCK_EX)) {
+        fwrite(STDERR, "Unable to acquire service lock\n");
+        exit(1);
+    }
+}
+
 switch ($action) {
     case 'up':
         $result = $manager->up($service); break;
@@ -50,3 +62,8 @@ switch ($action) {
 }
 
 echo json_encode($result) . PHP_EOL;
+
+if (is_resource($lock)) {
+    flock($lock, LOCK_UN);
+    fclose($lock);
+}
